@@ -7,10 +7,11 @@ from django.http import StreamingHttpResponse
 import cv2
 import threading
 
-
+# 메인 페이지
 def main(request):
     return render(request, 'main.html')
 
+# 영상 송출 페이지
 def home(request):
     return render(request, 'home.html')
 
