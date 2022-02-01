@@ -33,11 +33,18 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'common.apps.CommonConfig',  # 로그인 기능을 위함
     'masking',
+
+    # allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
@@ -76,8 +83,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Masking',
+        'USER': 'root',
+        'PASSWORD': 'kks0selk@',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
@@ -119,3 +130,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+# 로그인이 성공한 뒤 이동 URL
+LOGIN_REDIRECT_URL = '/'
+# 로그아웃이 성공한 뒤 이동 URL
+LOGOUT_REDIRECT_URL = '/'
+
+SITE_ID = 1
+
+# Custom User Model을 Athentication User Model로 등록 및 인증에 사용될 모델 설정
+AUTH_USER_MODEL = 'common.User'

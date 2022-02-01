@@ -10,4 +10,5 @@ from .views import *
 urlpatterns = [
 
     path('', include('masking.urls')),
+    path('common/', include('common.urls')),  # common(login) page
 ]

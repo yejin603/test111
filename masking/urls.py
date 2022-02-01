@@ -10,4 +10,7 @@ urlpatterns = [
     path('video', views.video, name='video'),
 
     path('home', views.home, name='home'),
+
+    # 마이페이지
+    path('mypage', views.mypage, name='mypage'),
 ]
