@@ -18,6 +18,8 @@ def home(request):
 @gzip.gzip_page
 def video(request):
     try:
+        # 응답 본문이 데이터를 계속 추가할 것이라고 브라우저에 알리고 브라우저에 원래 데이터를 데이터의 새 부분으로 교체하도록 요청
+        # 즉, 서버에서 얻은 비디오가 jpeg 사진으로 변환되어 브라우저에 전달, 브라우저는 비디오 효과를 위해 이전 이미지를 새 이미지로 지속적 교체
         cam = VideoCamera()
         return StreamingHttpResponse(gen(cam), content_type="multipart/x-mixed-replace;boundary=frame")
     except:
@@ -36,12 +38,29 @@ class VideoCamera(object):
 
     def get_frame(self):
         image = self.frame
-        _, jpeg = cv2.imencode('.jpg', image)
+        frame_flip = cv2.flip(image, 1) # 좌우반전 flip
+        _, jpeg = cv2.imencode('.jpg', frame_flip) # jpeg:인코딩 된 이미지
+
         return jpeg.tobytes()
 
     def update(self):
+        xml = 'masking/haarcascade_frontalface_default.xml'
+        face_cascade = cv2.CascadeClassifier(xml)
         while True:
             (self.grabbed, self.frame) = self.video.read()
+            gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
+
+            faces = face_cascade.detectMultiScale(gray, scaleFactor = 1.3,
+            minNeighbors = 4,
+            minSize = (20, 20))
+
+            if len(faces):
+                for (x, y, w, h) in faces:
+                    cv2.rectangle(self.frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+            cv2.rectangle(self.frame, (20, 20), (20 + 30, 20 + 30), (255, 0, 0), 3) # rectangle test... flicker
+
+
 
 def gen(camera):
     while True:
