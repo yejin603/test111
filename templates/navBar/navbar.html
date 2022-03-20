@@ -37,11 +37,11 @@
                 </li>
 
                 <li class="left" id="order">
-                    <!-- 주문하기 페이지는 로그인 이후에 접속되도록-->
+                    <!-- 방송 시청은 로그인 이후에 접속되도록-->
                     {% if user.is_authenticated %}
                     <a href="{% url 'masking:home' %}">방송시청</a>
                     {% else %}
-                    <a href="{% url 'masking:home' %}">방송시청</a>
+                    <a href="{% url 'common:login_main' %}">방송시청</a>
                     {% endif %}
 
                 </li>
