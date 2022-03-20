@@ -28,8 +28,6 @@ def video(request):
 
 #to capture video class
 class VideoCamera(object):
-
-
     def __init__(self):
         self.video = cv2.VideoCapture(0)
         (self.grabbed, self.frame) = self.video.read()
@@ -46,17 +44,22 @@ class VideoCamera(object):
         return jpeg.tobytes()
 
     def update(self):
-        # xml = 'masking/haarcascade_frontalface_default.xml'
-        # face_cascade = cv2.CascadeClassifier(xml)
+        xml = 'masking/haarcascade_frontalface_default.xml'
+        face_cascade = cv2.CascadeClassifier(xml)
         while True:
             (self.grabbed, self.frame) = self.video.read()
-            # gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-            #
-            # faces = face_cascade.detectMultiScale(gray, 1.05, 5)
-            #
-            # if len(faces):
-            #     for (x, y, w, h) in faces:
-            #         cv2.rectangle(self.frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
+
+            faces = face_cascade.detectMultiScale(gray, scaleFactor = 1.3,
+            minNeighbors = 4,
+            minSize = (20, 20))
+
+            if len(faces):
+                for (x, y, w, h) in faces:
+                    cv2.rectangle(self.frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+            cv2.rectangle(self.frame, (20, 20), (20 + 30, 20 + 30), (255, 0, 0), 3) # rectangle test... flicker
+
 
 
 def gen(camera):
