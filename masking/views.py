@@ -7,6 +7,9 @@ from django.http import StreamingHttpResponse
 import cv2
 import threading
 
+xml = 'masking/haarcascade_frontalface_default.xml'
+face_cascade = cv2.CascadeClassifier(xml)
+
 # 메인 페이지
 def main(request):
     return render(request, 'main.html')
@@ -38,27 +41,26 @@ class VideoCamera(object):
 
     def get_frame(self):
         image = self.frame
+
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3,
+                                              minNeighbors=5,
+                                              minSize=(20, 20))
+        if len(faces):
+            for (x, y, w, h) in faces:
+                cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+        cv2.rectangle(image, (20, 20), (20 + 30, 20 + 30), (255, 0, 0), 3) # rectangle test
+
         frame_flip = cv2.flip(image, 1) # 좌우반전 flip
         _, jpeg = cv2.imencode('.jpg', frame_flip) # jpeg:인코딩 된 이미지
 
         return jpeg.tobytes()
 
     def update(self):
-        xml = 'masking/haarcascade_frontalface_default.xml'
-        face_cascade = cv2.CascadeClassifier(xml)
         while True:
             (self.grabbed, self.frame) = self.video.read()
-            gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-
-            faces = face_cascade.detectMultiScale(gray, scaleFactor = 1.3,
-            minNeighbors = 4,
-            minSize = (20, 20))
-
-            if len(faces):
-                for (x, y, w, h) in faces:
-                    cv2.rectangle(self.frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-
-            cv2.rectangle(self.frame, (20, 20), (20 + 30, 20 + 30), (255, 0, 0), 3) # rectangle test... flicker
 
 
 
